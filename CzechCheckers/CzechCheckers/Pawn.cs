@@ -14,7 +14,8 @@ namespace CzechCheckers
 
         public override bool CanMove(int fromCol, int fromRow, int toCol, int toRow)
         {
-            return toRow == fromRow + 1 && (toCol == fromCol - 1 || toCol == fromCol + 1);  
+            int direction = color == Color.WHITE ? 1 : -1;
+            return toRow == fromRow + direction && (toCol == fromCol - 1 || toCol == fromCol + 1);  
         }
 
         public override string ToString()

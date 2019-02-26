@@ -22,13 +22,21 @@ namespace CzechCheckers
 
         public bool Move(int fromCol, int fromRow, int toCol, int toRow)
         {
-            if (IsMoveValid(fromCol, fromRow, toCol, toRow))
+            if (!IsMoveValid(fromCol, fromRow, toCol, toRow))
             {
                 return false;
             }
             IFigure figure = fields[fromCol, fromRow];
             fields[fromCol, fromRow] = null;
-            fields[toCol, toRow] = figure;
+            Pawn pawn = figure as Pawn;
+            if (pawn != null && toRow == MinRow || toRow == MaxRow)
+            {
+                fields[toCol, toRow] = new Queen(pawn.color);
+            }
+            else
+            { 
+                fields[toCol, toRow] = figure;
+            }
             return true;
         }
 

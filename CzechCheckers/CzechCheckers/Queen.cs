@@ -19,7 +19,7 @@ namespace CzechCheckers
 
         public override string ToString()
         {
-            return base.ToString().First() + "Q";
+            return base.ToString() + "Q";
         }
     }
 }
