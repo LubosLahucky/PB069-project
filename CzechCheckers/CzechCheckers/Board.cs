@@ -27,16 +27,17 @@ namespace CzechCheckers
                 return false;
             }
             RemoveObstacle(fromCol, fromRow, toCol, toRow);
-            IFigure figure = fields[fromCol, fromRow];
-            fields[fromCol, fromRow] = null;
-            if (toRow == MinRow || toRow == MaxRow && figure is Pawn)
+            IFigure figure = fields[fromRow, fromCol];
+            fields[fromRow, fromCol] = null;
+            if ((toRow == MinRow || toRow == MaxRow) && figure is Pawn)
             {
-                fields[toCol, toRow] = new Queen(figure.Color);
+                fields[toRow, toCol] = new Queen(figure.Color);
             }
             else
             {
-                fields[toCol, toRow] = figure;
+                fields[toRow, toCol] = figure;
             }
+            // TODO: Multihop
             return true;
         }
 
@@ -55,7 +56,7 @@ namespace CzechCheckers
                 return false;
             }
 
-            int obstacles = CountObstackesBetween(fromCol, fromRow, toCol, toRow);
+            int obstacles = CountObstaclesBetween(fromCol, fromRow, toCol, toRow);
             switch (obstacles)
             {
                 case 0: return fields[fromRow, fromCol].CanMove(fromCol, fromRow, toCol, toRow);
@@ -116,17 +117,19 @@ namespace CzechCheckers
             return output;
         }
 
-        private int CountObstackesBetween(int fromCol, int fromRow, int toCol, int toRow)
+        private int CountObstaclesBetween(int fromCol, int fromRow, int toCol, int toRow)
         {
             int stepCol = fromCol < toCol ? 1 : -1;
             int stepRow = fromRow < toRow ? 1 : -1;
+            int startCol = fromCol + stepCol;
+            int startRow = fromRow + stepRow;
 
             int obstacles = 0;
 
-            for (int col = fromCol + stepCol, row = fromRow + stepRow;
-                col < toCol && row < toRow;
+            for (int col = startCol, row = startRow;
+                col != toCol && row != toRow;
                 col += stepCol, row += stepRow)
-            {
+            { 
                 if (fields[row, col] != null)
                 {
                     obstacles++;
@@ -139,9 +142,11 @@ namespace CzechCheckers
         {
             int stepCol = fromCol < toCol ? 1 : -1;
             int stepRow = fromRow < toRow ? 1 : -1;
+            int startCol = fromCol + stepCol;
+            int startRow = fromRow + stepRow;
 
-            for (int col = fromCol + stepCol, row = fromRow + stepRow;
-                col < toCol && row < toRow;
+            for (int col = startCol, row = startRow;
+                col != toCol && row != toRow;
                 col += stepCol, row += stepRow)
             {
                 if (fields[row, col] != null)
@@ -155,7 +160,7 @@ namespace CzechCheckers
         private void RemoveObstacle(int fromCol, int fromRow, int toCol, int toRow)
         {
             Tuple<int, int> firstObstacle = FirstObstacleBetween(fromCol, fromRow, toCol, toRow);
-            if (firstObstacle != new Tuple<int, int>(-1, -1))
+            if (!firstObstacle.Equals(new Tuple<int, int>(-1, -1)))
             {
                 fields[firstObstacle.Item1, firstObstacle.Item2] = null;
             }

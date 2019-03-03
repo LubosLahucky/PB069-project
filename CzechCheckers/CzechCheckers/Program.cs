@@ -22,8 +22,11 @@ namespace CzechCheckers
                 { null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK) },
             };
 
+            Player white = new Player { Name = "Human", Color = Color.WHITE };
+            Player black = new Player { Name = "Human2", Color = Color.BLACK };
             Board board = new Board(fields);
-            Console.WriteLine(board);
+
+            new Game(white, black, board).Start();
         }
     }
 }
