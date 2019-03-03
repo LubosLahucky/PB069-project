@@ -8,7 +8,15 @@ namespace CzechCheckers
 {
     abstract class FigureBase : IFigure
     {
-        public readonly Color color;
+        private readonly Color color;
+
+        public Color Color
+        {
+            get
+            {
+                return color;
+            }
+        }
 
         public FigureBase(Color color)
         {
@@ -21,5 +29,6 @@ namespace CzechCheckers
         }
 
         public abstract bool CanMove(int fromCol, int fromRow, int toCol, int toRow);
+        public abstract bool CanJump(int fromCol, int fromRow, int throughCol, int throughRow, int toCol, int toRow);
     }
 }

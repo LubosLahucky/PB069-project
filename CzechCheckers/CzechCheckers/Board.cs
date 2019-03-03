@@ -14,7 +14,7 @@ namespace CzechCheckers
         public const int MaxCol = 7;
 
         private readonly IFigure[,] fields;
-
+        
         public Board(IFigure[,] fields)
         {
             this.fields = fields;
@@ -26,15 +26,15 @@ namespace CzechCheckers
             {
                 return false;
             }
+            RemoveObstacle(fromCol, fromRow, toCol, toRow);
             IFigure figure = fields[fromCol, fromRow];
             fields[fromCol, fromRow] = null;
-            Pawn pawn = figure as Pawn;
-            if (pawn != null && toRow == MinRow || toRow == MaxRow)
+            if (toRow == MinRow || toRow == MaxRow && figure is Pawn)
             {
-                fields[toCol, toRow] = new Queen(pawn.color);
+                fields[toCol, toRow] = new Queen(figure.Color);
             }
             else
-            { 
+            {
                 fields[toCol, toRow] = figure;
             }
             return true;
@@ -55,7 +55,43 @@ namespace CzechCheckers
                 return false;
             }
 
-            return fields[fromRow, fromCol].CanMove(fromCol, fromRow, toCol, toRow); 
+            int obstacles = CountObstackesBetween(fromCol, fromRow, toCol, toRow);
+            switch (obstacles)
+            {
+                case 0: return fields[fromRow, fromCol].CanMove(fromCol, fromRow, toCol, toRow);
+                case 1:
+                {
+                    Tuple<int, int> firstObstacle = FirstObstacleBetween(fromCol, fromRow, toCol, toRow);
+                    if (fields[fromRow, fromCol].Color == fields[firstObstacle.Item1, firstObstacle.Item2].Color)
+                    {
+                        return false;
+                    }
+                    return fields[fromRow, fromCol].CanJump(fromCol, fromRow, firstObstacle.Item2, firstObstacle.Item1, toCol, toRow);
+                }
+                default: return false;
+            }
+        }
+
+        public bool FigureHasToJump(int col, int row)
+        {
+            // TODO
+            if (fields[row, col] == null)
+            {
+                return false;
+            }
+            return false;
+        }
+
+        public bool PlayerHasToJump(Color color)
+        {
+            // TODO
+            return false;
+        }
+
+        public bool PlayerHasAnyMoves(Color color)
+        {
+            // TODO
+            return false;
         }
 
         public override string ToString()
@@ -78,6 +114,51 @@ namespace CzechCheckers
 
             AddLetters(ref output);
             return output;
+        }
+
+        private int CountObstackesBetween(int fromCol, int fromRow, int toCol, int toRow)
+        {
+            int stepCol = fromCol < toCol ? 1 : -1;
+            int stepRow = fromRow < toRow ? 1 : -1;
+
+            int obstacles = 0;
+
+            for (int col = fromCol + stepCol, row = fromRow + stepRow;
+                col < toCol && row < toRow;
+                col += stepCol, row += stepRow)
+            {
+                if (fields[row, col] != null)
+                {
+                    obstacles++;
+                }
+            }
+            return obstacles;
+        }
+
+        private Tuple<int, int> FirstObstacleBetween(int fromCol, int fromRow, int toCol, int toRow)
+        {
+            int stepCol = fromCol < toCol ? 1 : -1;
+            int stepRow = fromRow < toRow ? 1 : -1;
+
+            for (int col = fromCol + stepCol, row = fromRow + stepRow;
+                col < toCol && row < toRow;
+                col += stepCol, row += stepRow)
+            {
+                if (fields[row, col] != null)
+                {
+                    return new Tuple<int, int>(row, col);
+                }
+            }
+            return new Tuple<int, int>(-1, -1);
+        }
+
+        private void RemoveObstacle(int fromCol, int fromRow, int toCol, int toRow)
+        {
+            Tuple<int, int> firstObstacle = FirstObstacleBetween(fromCol, fromRow, toCol, toRow);
+            if (firstObstacle != new Tuple<int, int>(-1, -1))
+            {
+                fields[firstObstacle.Item1, firstObstacle.Item2] = null;
+            }
         }
 
         private void AddLetters(ref string output)

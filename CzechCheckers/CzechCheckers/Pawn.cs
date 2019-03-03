@@ -14,8 +14,18 @@ namespace CzechCheckers
 
         public override bool CanMove(int fromCol, int fromRow, int toCol, int toRow)
         {
-            int direction = color == Color.WHITE ? 1 : -1;
-            return toRow == fromRow + direction && (toCol == fromCol - 1 || toCol == fromCol + 1);  
+            return IsDiagonalStep(fromCol, fromRow, toCol, toRow, 1);
+        }
+
+        public override bool CanJump(int fromCol, int fromRow, int throughCol, int throughRow, int toCol, int toRow)
+        {
+            return IsDiagonalStep(fromCol, fromRow, throughCol, throughRow, 1) && IsDiagonalStep(fromCol, fromRow, toCol, toRow, 2);
+        }
+
+        private bool IsDiagonalStep(int fromCol, int fromRow, int toCol, int toRow, int distance)
+        {
+            int direction = Color == Color.WHITE ? distance : -distance;
+            return toRow == fromRow + direction && (toCol == fromCol - distance || toCol == fromCol + distance);
         }
 
         public override string ToString()
