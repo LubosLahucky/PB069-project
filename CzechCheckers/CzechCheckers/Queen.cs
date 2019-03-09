@@ -14,12 +14,24 @@ namespace CzechCheckers
 
         public override bool CanMove(int fromCol, int fromRow, int toCol, int toRow)
         {
+            return IsSameDiagonal(fromCol, fromRow, toCol, toRow)
+                && Distance(fromCol, fromRow, toCol, toRow) >= 2;
+        }
+
+        public override bool CanJump(int fromCol, int fromRow, int toCol, int toRow)
+        {
+            return CanMove(fromCol, fromRow, toCol, toRow) 
+                && Distance(fromCol, fromRow, toCol, toRow) >= 4;
+        }
+
+        private bool IsSameDiagonal(int fromCol, int fromRow, int toCol, int toRow)
+        {
             return (Math.Abs(fromCol - toCol) == Math.Abs(fromRow - toRow));
         }
 
-        public override bool CanJump(int fromCol, int fromRow, int throughCol, int throughRow, int toCol, int toRow)
+        private int Distance(int fromCol, int fromRow, int toCol, int toRow)
         {
-            return CanMove(fromCol, fromRow, throughCol, throughRow) && CanMove(fromCol, fromRow, toCol, toRow);
+            return Math.Abs(fromCol - toCol) + Math.Abs(fromRow - toRow);
         }
 
         public override string ToString()

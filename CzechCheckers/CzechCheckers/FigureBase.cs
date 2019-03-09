@@ -8,27 +8,20 @@ namespace CzechCheckers
 {
     abstract class FigureBase : IFigure
     {
-        private readonly Color color;
-
-        public Color Color
-        {
-            get
-            {
-                return color;
-            }
-        }
+        public Color Color { get; }
 
         public FigureBase(Color color)
         {
-            this.color = color;
+            Color = color;
         }
 
         public override string ToString()
         {
-            return color.ToString().First() + "";
+            return Color.ToString().First() + "";
         }
 
         public abstract bool CanMove(int fromCol, int fromRow, int toCol, int toRow);
-        public abstract bool CanJump(int fromCol, int fromRow, int throughCol, int throughRow, int toCol, int toRow);
+
+        public abstract bool CanJump(int fromCol, int fromRow, int toCol, int toRow);
     }
 }

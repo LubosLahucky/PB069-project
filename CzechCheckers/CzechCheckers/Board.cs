@@ -13,6 +13,8 @@ namespace CzechCheckers
         public const int MinCol = 0;
         public const int MaxCol = 7;
 
+        private IFigure LastJumped { get; set; }
+        
         private readonly IFigure[,] fields;
         
         public Board(IFigure[,] fields)
@@ -26,7 +28,7 @@ namespace CzechCheckers
             {
                 return false;
             }
-            RemoveObstacle(fromCol, fromRow, toCol, toRow);
+            bool jump = RemoveObstacle(fromCol, fromRow, toCol, toRow);
             IFigure figure = fields[fromRow, fromCol];
             fields[fromRow, fromCol] = null;
             if ((toRow == MinRow || toRow == MaxRow) && figure is Pawn)
@@ -37,29 +39,49 @@ namespace CzechCheckers
             {
                 fields[toRow, toCol] = figure;
             }
-            // TODO: Multihop
+
+            LastJumped = (jump && FigureHasToJump(toCol, toRow)) ? fields[toCol, toRow] : null;
             return true;
+        }
+
+        public bool IsTurnOver()
+        {
+            return LastJumped == null;
         }
 
         public bool IsMoveValid(int fromCol, int fromRow, int toCol, int toRow)
         {
-            if (fields[fromRow, fromCol] == null || fields[toRow, toCol] != null)
-            {
-                return false;
-            }
-
             if (fromRow < MinRow || fromRow > MaxRow
-                || fromCol < MinCol || fromRow > MaxCol
+                || fromCol < MinCol || fromCol > MaxCol
                 || toRow < MinRow || toRow > MaxRow
                 || toCol < MinCol || toCol > MaxCol)
             {
                 return false;
             }
 
+            if (fields[fromRow, fromCol] == null || fields[toRow, toCol] != null)
+            {
+                return false;
+            }
+
+            if (!IsTurnOver() && !IsFigureMultiJumping(fromCol, fromRow))
+            {
+                return false;
+            }
+
+            // TODO: Pawn has to jump, Queen has to jump
+
             int obstacles = CountObstaclesBetween(fromCol, fromRow, toCol, toRow);
             switch (obstacles)
             {
-                case 0: return fields[fromRow, fromCol].CanMove(fromCol, fromRow, toCol, toRow);
+                case 0:
+                {
+                    if (!IsTurnOver())
+                    {
+                        return false;
+                    }
+                    return fields[fromRow, fromCol].CanMove(fromCol, fromRow, toCol, toRow);
+                }
                 case 1:
                 {
                     Tuple<int, int> firstObstacle = FirstObstacleBetween(fromCol, fromRow, toCol, toRow);
@@ -67,31 +89,69 @@ namespace CzechCheckers
                     {
                         return false;
                     }
-                    return fields[fromRow, fromCol].CanJump(fromCol, fromRow, firstObstacle.Item2, firstObstacle.Item1, toCol, toRow);
+                    return fields[fromRow, fromCol].CanJump(fromCol, fromRow, toCol, toRow);
                 }
                 default: return false;
             }
         }
 
-        public bool FigureHasToJump(int col, int row)
+        public bool PlayerHasToJump(Color color)
         {
-            // TODO
-            if (fields[row, col] == null)
+            if (LastJumped?.Color == color)
             {
-                return false;
+                return true;
+            }
+
+            for (int col = 0; col < MaxCol; ++col)
+            {
+                for (int row = 0; row < MaxRow; ++row)
+                {
+                    IFigure figure = fields[col, row];
+                    if (figure != null && figure.Color == color && FigureHasToJump(col, row))
+                        return true;
+                }
             }
             return false;
         }
 
-        public bool PlayerHasToJump(Color color)
+        public bool FigureHasToJump(int fromCol, int fromRow)
         {
-            // TODO
+            for (int toCol = 0; toCol < MaxCol; ++toCol)
+            {
+                for (int toRow = 0; toRow < MaxRow; ++toRow)
+                {
+                    if (fields[fromCol, fromRow].CanJump(fromCol, fromRow, toCol, toRow) 
+                        && IsMoveValid(fromCol, fromRow, toCol, toRow))
+                        return true;
+                }
+            }
             return false;
         }
 
         public bool PlayerHasAnyMoves(Color color)
         {
-            // TODO
+            for (int col = 0; col < MaxCol; ++col)
+            {
+                for (int row = 0; row < MaxRow; ++row)
+                {
+                    IFigure figure = fields[col, row];
+                    if (figure != null && figure.Color == color && FigureHasAnyMoves(col, row))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        public bool FigureHasAnyMoves(int fromCol, int fromRow)
+        {
+            for (int toCol = 0; toCol < MaxCol; ++toCol)
+            {
+                for (int toRow = 0; toRow < MaxRow; ++toRow)
+                {
+                    if (IsMoveValid(fromCol, fromRow, toCol, toRow))
+                        return true;
+                }
+            }
             return false;
         }
 
@@ -157,13 +217,20 @@ namespace CzechCheckers
             return new Tuple<int, int>(-1, -1);
         }
 
-        private void RemoveObstacle(int fromCol, int fromRow, int toCol, int toRow)
+        private bool RemoveObstacle(int fromCol, int fromRow, int toCol, int toRow)
         {
             Tuple<int, int> firstObstacle = FirstObstacleBetween(fromCol, fromRow, toCol, toRow);
             if (!firstObstacle.Equals(new Tuple<int, int>(-1, -1)))
             {
                 fields[firstObstacle.Item1, firstObstacle.Item2] = null;
+                return true;
             }
+            return false;
+        }
+
+        private bool IsFigureMultiJumping(int fromCol, int fromRow)
+        {
+            return fields[fromCol, fromRow] == LastJumped;
         }
 
         private void AddLetters(ref string output)

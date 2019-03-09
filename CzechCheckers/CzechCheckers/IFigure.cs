@@ -12,10 +12,9 @@ namespace CzechCheckers
          */
         bool CanMove(int fromCol, int fromRow, int toCol, int toRow);
 
-        /* Checkes whether the figure can jump from coordinates (fromCol, fromRow) through (throughCol, throughRow) 
-         * to coordinates (toCol, toRow)  
+        /* Checkes whether the figure can jump from coordinates (fromCol, fromRow) and land on coordinates (toCol, toRow)  
          */
-        bool CanJump(int fromCol, int fromRow, int throughCol, int throughRow, int toCol, int toRow);
+        bool CanJump(int fromCol, int fromRow, int toCol, int toRow);
 
         Color Color { get; }
     }
