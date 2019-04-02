@@ -33,5 +33,20 @@ namespace CzechCheckers
         {
             return base.ToString() + "P";
         }
+
+        public override IEnumerable<Field> PossibleMoves(Field from)
+        {
+            from.Row += Color == FigureColor.WHITE ? 1 : -1;
+            from.Column += 1;
+            if (Board.CheckFieldBounds(from))
+            { 
+                yield return from;
+            }
+            from.Column -= 2;
+            if (Board.CheckFieldBounds(from))
+            {
+                yield return from;
+            }
+        }
     }
 }

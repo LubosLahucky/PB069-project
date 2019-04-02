@@ -38,5 +38,10 @@ namespace CzechCheckers
         {
             return base.ToString() + "Q";
         }
+
+        public override IEnumerable<Field> PossibleMoves(Field from)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

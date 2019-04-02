@@ -228,12 +228,16 @@ namespace CzechCheckers
             return LastJumped == figure;
         }
 
-        private bool CheckMoveBounds(Move move)
+        public static bool CheckFieldBounds(Field field)
         {
-            return move.From.Row >= MinRow && move.From.Row <= MaxRow
-                && move.From.Column >= MinCol && move.From.Column <= MaxCol
-                && move.To.Row >= MinRow && move.To.Row <= MaxRow
-                && move.To.Column >= MinCol && move.To.Column <= MaxCol;
+            return field.Row >= MinRow && field.Row <= MaxRow
+                && field.Column >= MinCol && field.Column <= MaxCol;
+        }
+
+        public static bool CheckMoveBounds(Move move)
+        {
+            return CheckFieldBounds(move.From)
+                && CheckFieldBounds(move.To);
         }
 
         private void AddLetters(ref string output)

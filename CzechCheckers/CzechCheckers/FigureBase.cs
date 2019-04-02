@@ -23,5 +23,8 @@ namespace CzechCheckers
         public abstract bool CanMove(Move move);
 
         public abstract bool CanJump(Move move);
+
+        public abstract IEnumerable<Field> PossibleMoves(Field from);
+
     }
 }
