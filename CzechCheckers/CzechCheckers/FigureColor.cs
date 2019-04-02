@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CzechCheckers
 {
-    enum Color
+    enum FigureColor
     {
         WHITE, BLACK
     }

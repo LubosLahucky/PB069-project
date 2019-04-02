@@ -12,18 +12,18 @@ namespace CzechCheckers
         {
             IFigure[,] fields = new IFigure[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]
             {
-                { new Pawn(Color.WHITE), null, new Pawn(Color.WHITE), null, new Pawn(Color.WHITE), null, new Pawn(Color.WHITE), null },
-                { null, new Pawn(Color.WHITE), null, new Pawn(Color.WHITE), null, new Pawn(Color.WHITE), null, new Pawn(Color.WHITE) },
+                { new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null },
+                { null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE) },
                 { null, null, null, null, null, null, null, null },
                 { null, null, null, null, null, null, null, null },
                 { null, null, null, null, null, null, null, null },
                 { null, null, null, null, null, null, null, null },
-                { new Pawn(Color.BLACK), null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK), null },
-                { null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK), null, new Pawn(Color.BLACK) },
+                { new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null },
+                { null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK) },
             };
 
-            Player white = new Player { Name = "Human", Color = Color.WHITE };
-            Player black = new Player { Name = "Human2", Color = Color.BLACK };
+            Player white = new Player { Name = "Human", Color = FigureColor.WHITE };
+            Player black = new Player { Name = "Human2", Color = FigureColor.BLACK };
             Board board = new Board(fields);
 
             new Game(white, black, board).Start();

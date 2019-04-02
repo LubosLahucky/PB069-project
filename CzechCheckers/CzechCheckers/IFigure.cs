@@ -8,14 +8,20 @@ namespace CzechCheckers
 {
     interface IFigure
     {
-        /* Checks whether the figure can move from coordinates (fromCol, fromRow) to coordinates (toCol, toRow)  
-         */
-        bool CanMove(int fromCol, int fromRow, int toCol, int toRow);
+        /// <summary>
+        /// Defines the way how the figure moves
+        /// </summary>
+        /// <param name="move">Move to be decided whether it is valid or not (on infinite empty board)</param>
+        /// <returns></returns>
+        bool CanMove(Move move);
 
-        /* Checkes whether the figure can jump from coordinates (fromCol, fromRow) and land on coordinates (toCol, toRow)  
-         */
-        bool CanJump(int fromCol, int fromRow, int toCol, int toRow);
+        /// <summary>
+        /// Defines the way how the figure jumps
+        /// </summary>
+        /// <param name="move">Jump to be decided whether it is valid or not (on infinite empty board)</param>
+        /// <returns></returns>
+        bool CanJump(Move move);
 
-        Color Color { get; }
+        FigureColor Color { get; }
     }
 }

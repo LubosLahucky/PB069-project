@@ -8,9 +8,9 @@ namespace CzechCheckers
 {
     abstract class FigureBase : IFigure
     {
-        public Color Color { get; }
+        public FigureColor Color { get; }
 
-        public FigureBase(Color color)
+        public FigureBase(FigureColor color)
         {
             Color = color;
         }
@@ -20,8 +20,8 @@ namespace CzechCheckers
             return Color.ToString().First() + "";
         }
 
-        public abstract bool CanMove(int fromCol, int fromRow, int toCol, int toRow);
+        public abstract bool CanMove(Move move);
 
-        public abstract bool CanJump(int fromCol, int fromRow, int toCol, int toRow);
+        public abstract bool CanJump(Move move);
     }
 }

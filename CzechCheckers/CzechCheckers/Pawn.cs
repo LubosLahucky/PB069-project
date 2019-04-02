@@ -8,24 +8,25 @@ namespace CzechCheckers
 {
     class Pawn : FigureBase
     {
-        public Pawn(Color color) : base(color)
+        public Pawn(FigureColor color) : base(color)
         {
         }
 
-        public override bool CanMove(int fromCol, int fromRow, int toCol, int toRow)
+        public override bool CanMove(Move move)
         {
-            return IsDiagonalStep(fromCol, fromRow, toCol, toRow, 1);
+            return IsDiagonalStep(move, 1);
         }
 
-        public override bool CanJump(int fromCol, int fromRow, int toCol, int toRow)
+        public override bool CanJump(Move move)
         {
-            return IsDiagonalStep(fromCol, fromRow, toCol, toRow, 2);
+            return IsDiagonalStep(move, 2);
         }
 
-        private bool IsDiagonalStep(int fromCol, int fromRow, int toCol, int toRow, int distance)
+        private bool IsDiagonalStep(Move move, int distance)
         {
-            int direction = Color == Color.WHITE ? distance : -distance;
-            return toRow == fromRow + direction && (toCol == fromCol - distance || toCol == fromCol + distance);
+            int direction = Color == FigureColor.WHITE ? distance : -distance;
+            return move.To.Row == move.From.Row + direction 
+                && Math.Abs(move.To.Column - move.From.Column) == distance;
         }
 
         public override string ToString()

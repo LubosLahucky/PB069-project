@@ -47,7 +47,22 @@ namespace CzechCheckers
                 char.TryParse(Console.ReadLine(), out char toCol);
                 Console.Write("toRow = ");
                 int.TryParse(Console.ReadLine(), out int toRow);
-                validMove = board.Move(char.ToUpper(fromCol) - 'A', fromRow - 1, char.ToUpper(toCol) - 'A', toRow - 1);
+
+                Move move = new Move
+                {
+                    From = new Field
+                    {
+                        Column = char.ToUpper(fromCol) - 'A',
+                        Row = fromRow - 1,
+                    },
+                    To = new Field
+                    {
+                        Column = char.ToUpper(toCol) - 'A',
+                        Row = toRow - 1
+                    }
+                };
+
+                validMove = board.Move(move);
                 if (!validMove)
                 {
                     Console.WriteLine("Neplatný tah!");

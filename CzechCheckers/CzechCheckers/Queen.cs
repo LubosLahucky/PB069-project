@@ -8,30 +8,30 @@ namespace CzechCheckers
 {
     class Queen : FigureBase
     {
-        public Queen(Color color) : base(color)
+        public Queen(FigureColor color) : base(color)
         {
         }
 
-        public override bool CanMove(int fromCol, int fromRow, int toCol, int toRow)
+        public override bool CanMove(Move move)
         {
-            return IsSameDiagonal(fromCol, fromRow, toCol, toRow)
-                && Distance(fromCol, fromRow, toCol, toRow) >= 2;
+            return IsSameDiagonal(move)
+                && Distance(move) >= 2;
         }
 
-        public override bool CanJump(int fromCol, int fromRow, int toCol, int toRow)
+        public override bool CanJump(Move move)
         {
-            return CanMove(fromCol, fromRow, toCol, toRow) 
-                && Distance(fromCol, fromRow, toCol, toRow) >= 4;
+            return CanMove(move) 
+                && Distance(move) >= 4;
         }
 
-        private bool IsSameDiagonal(int fromCol, int fromRow, int toCol, int toRow)
+        private bool IsSameDiagonal(Move move)
         {
-            return (Math.Abs(fromCol - toCol) == Math.Abs(fromRow - toRow));
+            return (Math.Abs(move.From.Column - move.To.Column) == Math.Abs(move.From.Row - move.To.Row));
         }
 
-        private int Distance(int fromCol, int fromRow, int toCol, int toRow)
+        private int Distance(Move move)
         {
-            return Math.Abs(fromCol - toCol) + Math.Abs(fromRow - toRow);
+            return Math.Abs(move.From.Column - move.To.Column) + Math.Abs(move.From.Row - move.To.Row);
         }
 
         public override string ToString()
