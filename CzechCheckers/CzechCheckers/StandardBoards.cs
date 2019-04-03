@@ -12,12 +12,12 @@ namespace CzechCheckers
 
         public static Board GetEmptyBoard()
         {
-            return new Board(new IFigure[8, 8]);
+            return new Board(new IFigure[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]);
         }
 
         public static Board Get2v2Board()
         {
-            return new Board(new IFigure[8, 8]
+            return new Board(new IFigure[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]
             {
                 { new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null },
                 { null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE) },
@@ -32,7 +32,7 @@ namespace CzechCheckers
 
         public static Board Get3v3Board()
         {
-            return new Board(new IFigure[8, 8]
+            return new Board(new IFigure[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]
             {
                 { new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null },
                 { null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE) },
