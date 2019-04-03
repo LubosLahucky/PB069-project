@@ -26,7 +26,7 @@ namespace CzechCheckers
 
         private bool IsSameDiagonal(Move move)
         {
-            return (Math.Abs(move.From.Column - move.To.Column) == Math.Abs(move.From.Row - move.To.Row));
+            return Math.Abs(move.From.Column - move.To.Column) == Math.Abs(move.From.Row - move.To.Row);
         }
 
         private int Distance(Move move)
@@ -41,7 +41,32 @@ namespace CzechCheckers
 
         public override IEnumerable<Field> PossibleMoves(Field from)
         {
-            throw new NotImplementedException();
+            var maxDistance = Math.Max(Board.MaxRow, Board.MaxCol);
+            for (int distance = 1; distance < maxDistance; ++distance)
+            {
+                Field field = from;
+                field.Row += distance;
+                field.Column += distance;
+                if (Board.CheckFieldBounds(field))
+                {
+                    yield return field;
+                }
+                field.Column -= 2 * distance;
+                if (Board.CheckFieldBounds(field))
+                {
+                    yield return field;
+                }
+                field.Row -= 2 * distance;
+                if (Board.CheckFieldBounds(field))
+                {
+                    yield return field;
+                }
+                field.Column += 2 * distance;
+                if (Board.CheckFieldBounds(field))
+                {
+                    yield return field;
+                }
+            }
         }
     }
 }
