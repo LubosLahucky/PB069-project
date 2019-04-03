@@ -10,6 +10,11 @@ namespace CzechCheckers
     {
         private StandardBoards() { }
 
+        public static Board GetEmptyBoard()
+        {
+            return new Board(new IFigure[8, 8]);
+        }
+
         public static Board Get2v2Board()
         {
             return new Board(new IFigure[8, 8]
