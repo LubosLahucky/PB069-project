@@ -44,27 +44,25 @@ namespace CzechCheckers
             var maxDistance = Math.Max(Board.MaxRow, Board.MaxCol);
             for (int distance = 1; distance <= maxDistance; ++distance)
             {
-                Field field = from;
-                field.Row += distance;
-                field.Column += distance;
-                if (Board.CheckFieldBounds(field))
+                int[,] directions = new int[,]
                 {
-                    yield return field;
-                }
-                field.Column -= 2 * distance;
-                if (Board.CheckFieldBounds(field))
+                    { 1, 1},  // top right
+                    { 1, -1}, // top left
+                    { -1, 1}, // bottom right
+                    { -1, -1} // bottom left
+                };
+
+                for (int i = 0; i < directions.GetLength(0); ++i)
                 {
-                    yield return field;
-                }
-                field.Row -= 2 * distance;
-                if (Board.CheckFieldBounds(field))
-                {
-                    yield return field;
-                }
-                field.Column += 2 * distance;
-                if (Board.CheckFieldBounds(field))
-                {
-                    yield return field;
+                    Field field = new Field
+                    {
+                        Row = from.Row + directions[i, 0] * distance,
+                        Column = from.Column + directions[i, 1] * distance
+                    };
+                    if (Board.CheckFieldBounds(field))
+                    {
+                        yield return field;
+                    }
                 }
             }
         }
