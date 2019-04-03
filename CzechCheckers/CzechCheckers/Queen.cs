@@ -42,7 +42,7 @@ namespace CzechCheckers
         public override IEnumerable<Field> PossibleMoves(Field from)
         {
             var maxDistance = Math.Max(Board.MaxRow, Board.MaxCol);
-            for (int distance = 1; distance < maxDistance; ++distance)
+            for (int distance = 1; distance <= maxDistance; ++distance)
             {
                 Field field = from;
                 field.Row += distance;
