@@ -236,7 +236,10 @@ namespace CzechCheckers.Tests
 
             var possibleMoves = figure.PossibleMoves(from);
 
-            return possibleMoves.Count() == correct.Count() && !possibleMoves.Except(correct).Any(); 
+            return possibleMoves.Count() == correct.Count()
+                && !possibleMoves.Except(correct).Any()
+                && correct.All(field => figure.CanMove(new Move(from, field)))
+                && board.AllFields().Except(correct).All(field => !figure.CanMove(new Move(from, field)));
         }
     }
 }
