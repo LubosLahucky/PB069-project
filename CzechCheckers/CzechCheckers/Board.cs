@@ -245,7 +245,7 @@ namespace CzechCheckers
             }
         }
 
-        private IEnumerable<Field> AllFields()
+        public IEnumerable<Field> AllFields()
         {
             for (int row = 0; row < MaxRow; ++row)
             {
@@ -256,12 +256,12 @@ namespace CzechCheckers
             }
         }
 
-        private IEnumerable<Field> NonEmptyFields()
+        public IEnumerable<Field> NonEmptyFields()
         {
             return AllFields().Where(field => this[field] != null);
         }
 
-        private IEnumerable<Field> PlayerFields(FigureColor color)
+        public IEnumerable<Field> PlayerFields(FigureColor color)
         {
             return AllFields().Where(field => this[field]?.Color == color);
         }
