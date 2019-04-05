@@ -15,6 +15,6 @@ namespace CzechCheckers
 
         public bool IsValid() => !Equals(Invalid);
 
-        public override string ToString() => $"[{(char)('A' + Column)}:{Row}]";
+        public override string ToString() => $"[{(char)('A' + Column)}:{Row + 1}]";
     }
 }
