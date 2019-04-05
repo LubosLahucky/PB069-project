@@ -15,9 +15,12 @@ namespace CzechCheckers
 
             /*
             var board = StandardBoards.GetEmptyBoard();
-            var from = new Field { Row = 0, Column = 0 };
-            board[from] = new Queen(FigureColor.WHITE);
-            foreach (var field in board[from].PossibleMoves(from))
+            Field from = new Field { Row = 2, Column = 2 };
+            board[from] = new Pawn(FigureColor.WHITE);
+            board[new Field { Row = 3, Column = 1 }] = new Pawn(FigureColor.BLACK);
+            board[new Field { Row = 2, Column = 0 }] = new Pawn(FigureColor.WHITE);
+
+            foreach (var field in Helpers.AllFields().Where(to => board.IsMoveValid(new Move(from, to), FigureColor.WHITE)))
                 Console.WriteLine(field);
             */
 

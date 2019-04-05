@@ -62,7 +62,7 @@ namespace CzechCheckers
                     }
                 };
 
-                validMove = board.Move(move);
+                validMove = board.Move(move, onTurn.Color);
                 if (!validMove)
                 {
                     Console.WriteLine("Neplatný tah!");

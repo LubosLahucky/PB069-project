@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace CzechCheckers.Tests
 {
     [TestClass]
-    public class BasicMovement
+    public class MovesGeneration
     {
         private Board board;
 
@@ -237,9 +237,7 @@ namespace CzechCheckers.Tests
             var possibleMoves = figure.PossibleMoves(from);
 
             return possibleMoves.Count() == correct.Count()
-                && !possibleMoves.Except(correct).Any()
-                && correct.All(field => figure.CanMove(new Move(from, field)))
-                && board.AllFields().Except(correct).All(field => !figure.CanMove(new Move(from, field)));
+                && !possibleMoves.Except(correct).Any();
         }
     }
 }

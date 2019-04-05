@@ -13,7 +13,7 @@ namespace CzechCheckers
         public const int MinCol = 0;
         public const int MaxCol = 7;
 
-        private IFigure LastJumped { get; set; }
+        private IFigure MultiJumping { get; set; }
         
         private readonly IFigure[,] fields;
         
@@ -27,10 +27,10 @@ namespace CzechCheckers
             get => fields[field.Row, field.Column];
             set => fields[field.Row, field.Column] = value;
         }
-
-        public bool Move(Move move)
+        
+        public bool Move(Move move, FigureColor onTurnColor)
         {
-            if (!IsMoveValid(move))
+            if (!IsMoveValid(move, onTurnColor))
             {
                 return false;
             }
@@ -43,22 +43,18 @@ namespace CzechCheckers
             if ((move.To.Row == MinRow || move.To.Row == MaxRow) && figure is Pawn)
             {
                 this[move.To] = new Queen(figure.Color);
-                LastJumped = null;
+                MultiJumping = null;
             }
             else
             {
                 this[move.To] = figure;
-                LastJumped = (jump && FigureHasToJump(move.To.Column, move.To.Row)) ? this[move.To] : null;
+                MultiJumping = (jump && FigureHasToJump(move.To)) ? figure : null;
             }
+
             return true;
         }
 
-        public bool IsTurnOver()
-        {
-            return LastJumped == null;
-        }
-
-        public bool IsMoveValid(Move move)
+        public bool IsMoveValid(Move move, FigureColor onTurnColor)
         {
             if (!CheckMoveBounds(move))
             {
@@ -66,57 +62,92 @@ namespace CzechCheckers
             }
 
             IFigure figure = this[move.From];
-            if (figure == null || this[move.To] != null)
+            if (figure == null 
+                || this[move.To] != null
+                || figure.Color != onTurnColor
+                || (!IsTurnOver() && !IsFigureMultiJumping(figure)))
             {
                 return false;
             }
 
-            if (!IsTurnOver() && !IsFigureMultiJumping(figure))
+            if (PlayerHasToJump(onTurnColor))
             {
-                return false;
+                if (!(figure is Queen) && QueenHasToJump(onTurnColor))
+                {
+                    return false;
+                }
+                return CheckJump(move);
             }
 
-            // TODO: Pawn has to jump, Queen has to jump
-
-            int obstacles = CountObstaclesBetween(move.From, move.To);
-            switch (obstacles)
-            {
-                case 0: return IsTurnOver() && figure.CanMove(move);
-                case 1: return figure.Color != this[FindFirstObstacleBetween(move.From, move.To)].Color && figure.CanJump(move);
-                
-            }
-            return false;
+            return CheckMove(move);
+        }
+        
+        public bool IsTurnOver()
+        {
+            return MultiJumping == null;
         }
 
         public bool PlayerHasToJump(FigureColor color)
         {
-            if (LastJumped?.Color == color)
+            if (MultiJumping?.Color == color)
             {
                 return true;
             }
-
-            for (int col = 0; col < MaxCol; ++col)
-            {
-                for (int row = 0; row < MaxRow; ++row)
-                {
-                    IFigure figure = fields[row, col];
-                    if (figure != null && figure.Color == color && FigureHasToJump(col, row))
-                        return true;
+            foreach (Field from in PlayerFields(color))
+            { 
+                IFigure figure = this[from];
+                if (FigureHasToJump(from))
+                { 
+                    return true;
                 }
             }
             return false;
         }
 
-        public bool FigureHasToJump(int fromCol, int fromRow)
+        public bool QueenHasToJump(FigureColor color)
         {
-            for (int toCol = 0; toCol < MaxCol; ++toCol)
+            if (MultiJumping?.Color == color && MultiJumping is Queen)
             {
-                for (int toRow = 0; toRow < MaxRow; ++toRow)
+                return true;
+            }
+            foreach (Field from in PlayerFields(color).Where(field => this[field] is Queen))
+            {
+                IFigure figure = this[from];
+                if (FigureHasToJump(from))
                 {
-                    Move move = new Move(fromRow, fromCol, toRow, toCol);
-                    if (fields[fromRow, fromCol].CanJump(move) 
-                        && IsMoveValid(move))
-                        return true;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool CheckMove(Move move)
+        {
+            var figure = this[move.From];
+            return IsTurnOver() 
+                && figure.CanMove(move)
+                && CountObstaclesBetween(move.From, move.To) == 0;
+        }
+
+        private bool CheckJump(Move move)
+        {
+            var figure = this[move.From];
+            var firstObstacle = FindFirstObstacleBetween(move.From, move.To);
+            return figure.CanJump(move)
+                && !firstObstacle.Equals(Field.Invalid)
+                && this[firstObstacle].Color != figure.Color
+                && CountObstaclesBetween(move.From, move.To) == 1;
+        }
+
+        public bool FigureHasToJump(Field from)
+        {
+            var figure = this[from];
+            foreach (Field to in EmptyFields())
+            {
+                var move = new Move(from, to);
+                if (CheckJump(move))
+                {
+                    return true;
                 }
             }
             return false;
@@ -140,12 +171,71 @@ namespace CzechCheckers
             foreach (Field to in figure.PossibleMoves(from))
             {
                 var move = new Move(from, to);
-                if (IsMoveValid(move))
+                if (IsMoveValid(move, figure.Color))
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        private int CountObstaclesBetween(Field from, Field to)
+        {
+            return NonEmptyFieldsBetween(from, to).Count(); 
+        }
+
+        private Field FindFirstObstacleBetween(Field from, Field to)
+        {
+            var nonEmpty = NonEmptyFieldsBetween(from, to);
+            return nonEmpty.Any() ? nonEmpty.First() : Field.Invalid;
+        }
+
+        private IEnumerable<Field> NonEmptyFieldsBetween(Field from, Field to)
+        {
+            return Helpers.DiagonalPath(from, to).Where(field => this[field] != null);
+        }
+        
+        private bool RemoveFirstObstacleBetween(Field from, Field to)
+        {
+            Field firstObstacle = FindFirstObstacleBetween(from, to);
+            if (firstObstacle.IsValid())
+            {
+                this[firstObstacle] = null;
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsFigureMultiJumping(IFigure figure)
+        {
+            return MultiJumping == figure;
+        }
+
+        public static bool CheckMoveBounds(Move move)
+        {
+            return CheckFieldBounds(move.From)
+                && CheckFieldBounds(move.To);
+        }
+
+        public static bool CheckFieldBounds(Field field)
+        {
+            return field.Row >= MinRow && field.Row <= MaxRow
+                && field.Column >= MinCol && field.Column <= MaxCol;
+        }
+
+        public IEnumerable<Field> NonEmptyFields()
+        {
+            return Helpers.AllFields().Except(EmptyFields());
+        }
+
+        public IEnumerable<Field> EmptyFields()
+        {
+            return Helpers.AllFields().Where(field => this[field] == null);
+        }
+
+        public IEnumerable<Field> PlayerFields(FigureColor color)
+        {
+            return Helpers.AllFields().Where(field => this[field]?.Color == color);
         }
 
         public override string ToString()
@@ -170,72 +260,6 @@ namespace CzechCheckers
             return output;
         }
 
-        private int CountObstaclesBetween(Field from, Field to)
-        {
-            int stepCol = from.Column < to.Column ? 1 : -1;
-            int stepRow = from.Row < to.Row ? 1 : -1;
-            int startCol = from.Column + stepCol;
-            int startRow = from.Row + stepRow;
-
-            int obstacles = 0;
-
-            for (int col = startCol, row = startRow;
-                col != to.Column && row != to.Row;
-                col += stepCol, row += stepRow)
-            { 
-                if (fields[row, col] != null)
-                {
-                    obstacles++;
-                }
-            }
-            return obstacles;
-        }
-
-        private Field FindFirstObstacleBetween(Field from, Field to)
-        {
-            int stepCol = from.Column < to.Column ? 1 : -1;
-            int stepRow = from.Row < to.Row ? 1 : -1;
-
-            for (int col = from.Column + stepCol, row = from.Row + stepRow;
-                col != to.Column && row != to.Row;
-                col += stepCol, row += stepRow)
-            {
-                if (fields[row, col] != null)
-                {
-                    return new Field { Column = col, Row = row };
-                }
-            }
-            return Field.Invalid;
-        }
-
-        private bool RemoveFirstObstacleBetween(Field from, Field to)
-        {
-            Field firstObstacle = FindFirstObstacleBetween(from, to);
-            if (firstObstacle.IsValid())
-            {
-                this[firstObstacle] = null;
-                return true;
-            }
-            return false;
-        }
-
-        private bool IsFigureMultiJumping(IFigure figure)
-        {
-            return LastJumped == figure;
-        }
-
-        public static bool CheckFieldBounds(Field field)
-        {
-            return field.Row >= MinRow && field.Row <= MaxRow
-                && field.Column >= MinCol && field.Column <= MaxCol;
-        }
-
-        public static bool CheckMoveBounds(Move move)
-        {
-            return CheckFieldBounds(move.From)
-                && CheckFieldBounds(move.To);
-        }
-
         private void AddLetters(ref string output)
         {
             output += "  ";
@@ -245,25 +269,5 @@ namespace CzechCheckers
             }
         }
 
-        public IEnumerable<Field> AllFields()
-        {
-            for (int row = 0; row < MaxRow; ++row)
-            {
-                for (int col = 0; col < MaxCol; ++col)
-                {
-                    yield return new Field { Row = row, Column = col }; 
-                }
-            }
-        }
-
-        public IEnumerable<Field> NonEmptyFields()
-        {
-            return AllFields().Where(field => this[field] != null);
-        }
-
-        public IEnumerable<Field> PlayerFields(FigureColor color)
-        {
-            return AllFields().Where(field => this[field]?.Color == color);
-        }
     }
 }

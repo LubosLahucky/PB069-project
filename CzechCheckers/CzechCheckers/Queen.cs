@@ -14,24 +14,14 @@ namespace CzechCheckers
 
         public override bool CanMove(Move move)
         {
-            return IsSameDiagonal(move)
-                && Distance(move) >= 2;
+            return Helpers.IsSameDiagonal(move.From, move.To)
+                && Helpers.HorizontalDistance(move.From, move.To) >= 1;
         }
 
         public override bool CanJump(Move move)
         {
-            return CanMove(move) 
-                && Distance(move) >= 4;
-        }
-
-        private bool IsSameDiagonal(Move move)
-        {
-            return Math.Abs(move.From.Column - move.To.Column) == Math.Abs(move.From.Row - move.To.Row);
-        }
-
-        private int Distance(Move move)
-        {
-            return Math.Abs(move.From.Column - move.To.Column) + Math.Abs(move.From.Row - move.To.Row);
+            return Helpers.IsSameDiagonal(move.From, move.To)
+                && Helpers.HorizontalDistance(move.From, move.To) >= 2;
         }
 
         public override string ToString()
