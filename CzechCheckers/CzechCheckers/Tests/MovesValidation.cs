@@ -407,10 +407,10 @@ namespace CzechCheckers.Tests
             Assert.IsTrue(CheckFigureMoves(secondWhitePawn, FigureColor.WHITE, new Field[0]));
         }
 
-        private bool CheckFigureMoves(Field from, FigureColor onTurnColor, params Field[] correct)
+        private bool CheckFigureMoves(Field from, FigureColor colorOnTurn, params Field[] correct)
         {
-            return correct.All(to => board.IsMoveValid(new Move(from, to), onTurnColor))
-                && Helpers.AllFields().Except(correct).All(to => !board.IsMoveValid(new Move(from, to), onTurnColor));
+            return correct.All(to => board.IsMoveValid(new Move(from, to), colorOnTurn))
+                && Helpers.AllFields().Except(correct).All(to => !board.IsMoveValid(new Move(from, to), colorOnTurn));
         }
     }
 }

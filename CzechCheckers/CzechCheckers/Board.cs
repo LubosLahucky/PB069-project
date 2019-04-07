@@ -28,9 +28,9 @@ namespace CzechCheckers
             set => fields[field.Row, field.Column] = value;
         }
         
-        public bool Move(Move move, FigureColor onTurnColor)
+        public bool Move(Move move, FigureColor colorOnTurn)
         {
-            if (!IsMoveValid(move, onTurnColor))
+            if (!IsMoveValid(move, colorOnTurn))
             {
                 return false;
             }
@@ -48,13 +48,13 @@ namespace CzechCheckers
             else
             {
                 this[move.To] = figure;
-                MultiJumping = (jump && FigureHasToJump(move.To)) ? figure : null;
+                MultiJumping = (jump && FigureMustJump(move.To)) ? figure : null;
             }
 
             return true;
         }
 
-        public bool IsMoveValid(Move move, FigureColor onTurnColor)
+        public bool IsMoveValid(Move move, FigureColor colorOnTurn)
         {
             if (!CheckMoveBounds(move))
             {
@@ -64,15 +64,15 @@ namespace CzechCheckers
             IFigure figure = this[move.From];
             if (figure == null 
                 || this[move.To] != null
-                || figure.Color != onTurnColor
+                || figure.Color != colorOnTurn
                 || (!IsTurnOver() && !IsFigureMultiJumping(figure)))
             {
                 return false;
             }
 
-            if (PlayerHasToJump(onTurnColor))
+            if (PlayerMustJump(colorOnTurn))
             {
-                if (!(figure is Queen) && QueenHasToJump(onTurnColor))
+                if (!(figure is Queen) && QueenMustJump(colorOnTurn))
                 {
                     return false;
                 }
@@ -87,7 +87,7 @@ namespace CzechCheckers
             return MultiJumping == null;
         }
 
-        public bool PlayerHasToJump(FigureColor color)
+        public bool PlayerMustJump(FigureColor color)
         {
             if (MultiJumping?.Color == color)
             {
@@ -96,7 +96,7 @@ namespace CzechCheckers
             foreach (Field from in PlayerFields(color))
             { 
                 IFigure figure = this[from];
-                if (FigureHasToJump(from))
+                if (FigureMustJump(from))
                 { 
                     return true;
                 }
@@ -104,7 +104,7 @@ namespace CzechCheckers
             return false;
         }
 
-        public bool QueenHasToJump(FigureColor color)
+        public bool QueenMustJump(FigureColor color)
         {
             if (MultiJumping?.Color == color && MultiJumping is Queen)
             {
@@ -113,7 +113,7 @@ namespace CzechCheckers
             foreach (Field from in PlayerFields(color).Where(field => this[field] is Queen))
             {
                 IFigure figure = this[from];
-                if (FigureHasToJump(from))
+                if (FigureMustJump(from))
                 {
                     return true;
                 }
@@ -139,7 +139,7 @@ namespace CzechCheckers
                 && CountObstaclesBetween(move.From, move.To) == 1;
         }
 
-        public bool FigureHasToJump(Field from)
+        public bool FigureMustJump(Field from)
         {
             var figure = this[from];
             foreach (Field to in EmptyFields())
