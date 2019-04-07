@@ -23,11 +23,18 @@ namespace CzechCheckers
         bool CanJump(Move move);
 
         /// <summary>
-        /// 
+        /// Generator of the collection of fields where the figure can move (ignoring other figures) from field
         /// </summary>
         /// <param name="from">Starting field</param>
-        /// <returns>The collection of fields where the figure can move (ignoring other figures) from field</returns>
+        /// <returns></returns>
         IEnumerable<Field> PossibleMoves(Field from);
+
+        /// <summary>
+        /// Generator of the collection of fields where the figure can jump (ignoring other figures) from field
+        /// </summary>
+        /// <param name="from">Starting field</param>
+        /// <returns></returns>
+        IEnumerable<Field> PossibleJumps(Field from);
 
         FigureColor Color { get; }
     }

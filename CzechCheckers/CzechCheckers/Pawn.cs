@@ -36,16 +36,35 @@ namespace CzechCheckers
 
         public override IEnumerable<Field> PossibleMoves(Field from)
         {
-            from.Row += Color == FigureColor.WHITE ? 1 : -1;
-            from.Column += 1;
-            if (Board.CheckFieldBounds(from))
-            { 
-                yield return from;
-            }
-            from.Column -= 2;
-            if (Board.CheckFieldBounds(from))
+            foreach (var field in DiagonalStepsForward(from, 1))
+                yield return field;
+        }
+
+        public override IEnumerable<Field> PossibleJumps(Field from)
+        {
+            foreach (var field in DiagonalStepsForward(from, 2))
+                yield return field;
+        }
+
+        private IEnumerable<Field> DiagonalStepsForward(Field from, int distance)
+        {
+            int verticalDirection = Color == FigureColor.WHITE ? 1 : -1;
+            int[] horizontalDirections = new int[]
             {
-                yield return from;
+                -1, // left
+                1   // right
+            };
+            foreach (int horizontalDirection in horizontalDirections)
+            {
+                var field = new Field
+                {
+                    Row = from.Row + verticalDirection * distance,
+                    Column = from.Column + horizontalDirection * distance
+                };
+                if (Board.CheckFieldBounds(field))
+                {
+                    yield return field;
+                }
             }
         }
     }

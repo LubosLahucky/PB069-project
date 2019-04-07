@@ -26,5 +26,7 @@ namespace CzechCheckers
 
         public abstract IEnumerable<Field> PossibleMoves(Field from);
 
+        public abstract IEnumerable<Field> PossibleJumps(Field from);
+        
     }
 }

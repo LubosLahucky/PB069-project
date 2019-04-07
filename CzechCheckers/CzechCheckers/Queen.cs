@@ -31,8 +31,20 @@ namespace CzechCheckers
 
         public override IEnumerable<Field> PossibleMoves(Field from)
         {
+            foreach (var field in DiagonalFields(from, 1))
+                yield return field;
+        }
+
+        public override IEnumerable<Field> PossibleJumps(Field from)
+        {
+            foreach (var field in DiagonalFields(from, 2))
+                yield return field;
+        }
+
+        private IEnumerable<Field> DiagonalFields(Field from, int initDistance)
+        {
             var maxDistance = Math.Max(Board.MaxRow, Board.MaxCol);
-            for (int distance = 1; distance <= maxDistance; ++distance)
+            for (int distance = initDistance; distance <= maxDistance; ++distance)
             {
                 int[,] directions = new int[,]
                 {
