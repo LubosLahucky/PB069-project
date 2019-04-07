@@ -25,10 +25,15 @@ namespace CzechCheckers
         public void Start()
         {
             while (true)
-            { 
+            {
                 Console.Clear();
                 Console.WriteLine(board);
                 Console.WriteLine();
+
+                if (CheckWin())
+                {
+                    break;
+                }
                 Move();
             }
         }
@@ -74,6 +79,16 @@ namespace CzechCheckers
             {
                 onTurn = onTurn == whitePlayer ? blackPlayer : whitePlayer;
             }
+        }
+
+        private bool CheckWin()
+        {
+            if (!board.HasPlayerAnyMoves(onTurn.Color))
+            {
+                Console.WriteLine($"Hráč {onTurn.Name} prehral.");
+                return true;
+            }
+            return false;
         }
     }
 }
