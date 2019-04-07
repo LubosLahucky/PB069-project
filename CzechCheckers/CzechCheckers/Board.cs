@@ -155,28 +155,25 @@ namespace CzechCheckers
 
         public bool HasPlayerAnyMoves(FigureColor color)
         {
-            foreach (Field field in PlayerFields(color))
-            {
-                if (HasFigureAnyMoves(field))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return PlayerFields(color).Any(from => HasFigureAnyMoves(from));
         }
 
         public bool HasFigureAnyMoves(Field from)
         {
-            var figure = this[from];
-            foreach (Field to in figure.PossibleMoves(from))
+            if (!CheckFieldBounds(from))
             {
-                var move = new Move(from, to);
-                if (IsMoveValid(move, figure.Color))
-                {
-                    return true;
-                }
+                return false;
             }
-            return false;
+
+            var figure = this[from];
+            if (figure == null)
+            {
+                return false;
+            }
+
+            return figure.PossibleMoves(from)
+                .Concat(figure.PossibleJumps(from))
+                .Any(to => IsMoveValid(new Move(from, to), figure.Color));
         }
 
         private int CountObstaclesBetween(Field from, Field to)
