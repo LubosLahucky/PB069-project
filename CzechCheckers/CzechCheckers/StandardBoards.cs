@@ -12,36 +12,36 @@ namespace CzechCheckers
 
         public static Board GetEmptyBoard()
         {
-            return new Board(new IFigure[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]);
+            return new Board(new IPiece[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]);
         }
 
         public static Board Get2v2Board()
         {
-            return new Board(new IFigure[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]
+            return new Board(new IPiece[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]
             {
-                { new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null },
-                { null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE) },
+                { new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null },
+                { null, new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White) },
                 { null, null, null, null, null, null, null, null },
                 { null, null, null, null, null, null, null, null },
                 { null, null, null, null, null, null, null, null },
                 { null, null, null, null, null, null, null, null },
-                { new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null },
-                { null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK) },
+                { new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black), null },
+                { null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black) },
             });
         }
 
         public static Board Get3v3Board()
         {
-            return new Board(new IFigure[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]
+            return new Board(new IPiece[Board.MaxRow - Board.MinRow + 1, Board.MaxCol - Board.MinCol + 1]
             {
-                { new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null },
-                { null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE) },
-                { new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null, new Pawn(FigureColor.WHITE), null },
+                { new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null },
+                { null, new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White) },
+                { new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null, new Pawn(Color.White), null },
                 { null, null, null, null, null, null, null, null },
                 { null, null, null, null, null, null, null, null },
-                { null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK) },
-                { new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null },
-                { null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK), null, new Pawn(FigureColor.BLACK) },
+                { null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black) },
+                { new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black), null },
+                { null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black), null, new Pawn(Color.Black) },
             });
         }
     }

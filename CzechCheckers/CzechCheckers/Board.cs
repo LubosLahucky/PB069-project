@@ -13,22 +13,22 @@ namespace CzechCheckers
         public const int MinCol = 0;
         public const int MaxCol = 7;
 
-        private IFigure MultiJumping { get; set; }
+        private IPiece MultiJumping { get; set; }
         
-        private readonly IFigure[,] fields;
+        private readonly IPiece[,] fields;
         
-        public Board(IFigure[,] fields)
+        public Board(IPiece[,] fields)
         {
             this.fields = fields;
         }
 
-        public IFigure this[Field field]
+        public IPiece this[Field field]
         {
             get => fields[field.Row, field.Column];
             set => fields[field.Row, field.Column] = value;
         }
         
-        public bool Move(Move move, FigureColor colorOnTurn)
+        public bool Move(Move move, Color colorOnTurn)
         {
             if (!IsMoveValid(move, colorOnTurn))
             {
@@ -37,42 +37,42 @@ namespace CzechCheckers
 
             bool jump = RemoveFirstObstacleBetween(move.From, move.To);
 
-            IFigure figure = this[move.From];
+            IPiece piece = this[move.From];
             this[move.From] = null;
 
-            if ((move.To.Row == MinRow || move.To.Row == MaxRow) && figure is Pawn)
+            if ((move.To.Row == MinRow || move.To.Row == MaxRow) && piece is Pawn)
             {
-                this[move.To] = new Queen(figure.Color);
+                this[move.To] = new Queen(piece.Color);
                 MultiJumping = null;
             }
             else
             {
-                this[move.To] = figure;
-                MultiJumping = (jump && FigureMustJump(move.To)) ? figure : null;
+                this[move.To] = piece;
+                MultiJumping = (jump && PieceMustJump(move.To)) ? piece : null;
             }
 
             return true;
         }
 
-        public bool IsMoveValid(Move move, FigureColor colorOnTurn)
+        public bool IsMoveValid(Move move, Color colorOnTurn)
         {
             if (!CheckMoveBounds(move))
             {
                 return false;
             }
 
-            IFigure figure = this[move.From];
-            if (figure == null 
+            IPiece piece = this[move.From];
+            if (piece == null 
                 || this[move.To] != null
-                || figure.Color != colorOnTurn
-                || (!IsTurnOver() && !IsFigureMultiJumping(figure)))
+                || piece.Color != colorOnTurn
+                || (!IsTurnOver() && !IsPieceMultiJumping(piece)))
             {
                 return false;
             }
 
             if (PlayerMustJump(colorOnTurn))
             {
-                if (!(figure is Queen) && QueenMustJump(colorOnTurn))
+                if (!(piece is Queen) && QueenMustJump(colorOnTurn))
                 {
                     return false;
                 }
@@ -87,7 +87,7 @@ namespace CzechCheckers
             return MultiJumping == null;
         }
 
-        public bool PlayerMustJump(FigureColor color)
+        public bool PlayerMustJump(Color color)
         {
             if (MultiJumping?.Color == color)
             {
@@ -95,8 +95,8 @@ namespace CzechCheckers
             }
             foreach (Field from in PlayerFields(color))
             { 
-                IFigure figure = this[from];
-                if (FigureMustJump(from))
+                IPiece piece = this[from];
+                if (PieceMustJump(from))
                 { 
                     return true;
                 }
@@ -104,7 +104,7 @@ namespace CzechCheckers
             return false;
         }
 
-        public bool QueenMustJump(FigureColor color)
+        public bool QueenMustJump(Color color)
         {
             if (MultiJumping?.Color == color && MultiJumping is Queen)
             {
@@ -112,8 +112,8 @@ namespace CzechCheckers
             }
             foreach (Field from in PlayerFields(color).Where(field => this[field] is Queen))
             {
-                IFigure figure = this[from];
-                if (FigureMustJump(from))
+                IPiece piece = this[from];
+                if (PieceMustJump(from))
                 {
                     return true;
                 }
@@ -123,25 +123,25 @@ namespace CzechCheckers
 
         private bool CheckMove(Move move)
         {
-            var figure = this[move.From];
+            var piece = this[move.From];
             return IsTurnOver() 
-                && figure.CanMove(move)
+                && piece.CanMove(move)
                 && CountObstaclesBetween(move.From, move.To) == 0;
         }
 
         private bool CheckJump(Move move)
         {
-            var figure = this[move.From];
+            var piece = this[move.From];
             var firstObstacle = FindFirstObstacleBetween(move.From, move.To);
-            return figure.CanJump(move)
+            return piece.CanJump(move)
                 && !firstObstacle.Equals(Field.Invalid)
-                && this[firstObstacle].Color != figure.Color
+                && this[firstObstacle].Color != piece.Color
                 && CountObstaclesBetween(move.From, move.To) == 1;
         }
 
-        public bool FigureMustJump(Field from)
+        public bool PieceMustJump(Field from)
         {
-            var figure = this[from];
+            var piece = this[from];
             foreach (Field to in EmptyFields())
             {
                 var move = new Move(from, to);
@@ -153,27 +153,27 @@ namespace CzechCheckers
             return false;
         }
 
-        public bool HasPlayerAnyMoves(FigureColor color)
+        public bool HasPlayerAnyMoves(Color color)
         {
-            return PlayerFields(color).Any(from => HasFigureAnyMoves(from));
+            return PlayerFields(color).Any(from => HasPieceAnyMoves(from));
         }
 
-        public bool HasFigureAnyMoves(Field from)
+        public bool HasPieceAnyMoves(Field from)
         {
             if (!CheckFieldBounds(from))
             {
                 return false;
             }
 
-            var figure = this[from];
-            if (figure == null)
+            var piece = this[from];
+            if (piece == null)
             {
                 return false;
             }
 
-            return figure.PossibleMoves(from)
-                .Concat(figure.PossibleJumps(from))
-                .Any(to => IsMoveValid(new Move(from, to), figure.Color));
+            return piece.PossibleMoves(from)
+                .Concat(piece.PossibleJumps(from))
+                .Any(to => IsMoveValid(new Move(from, to), piece.Color));
         }
 
         private int CountObstaclesBetween(Field from, Field to)
@@ -203,9 +203,9 @@ namespace CzechCheckers
             return false;
         }
 
-        private bool IsFigureMultiJumping(IFigure figure)
+        private bool IsPieceMultiJumping(IPiece piece)
         {
-            return MultiJumping == figure;
+            return MultiJumping == piece;
         }
 
         public static bool CheckMoveBounds(Move move)
@@ -230,7 +230,7 @@ namespace CzechCheckers
             return Helpers.AllFields().Where(field => this[field] == null);
         }
 
-        public IEnumerable<Field> PlayerFields(FigureColor color)
+        public IEnumerable<Field> PlayerFields(Color color)
         {
             return Helpers.AllFields().Where(field => this[field]?.Color == color);
         }

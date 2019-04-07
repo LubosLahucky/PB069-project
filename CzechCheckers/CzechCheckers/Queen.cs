@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CzechCheckers
 {
-    class Queen : FigureBase
+    class Queen : PieceBase
     {
-        public Queen(FigureColor color) : base(color)
+        public Queen(Color color) : base(color)
         {
         }
 

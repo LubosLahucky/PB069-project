@@ -9,6 +9,6 @@ namespace CzechCheckers
     class Player
     {
         public string Name { get; set; }
-        public FigureColor Color { get; set; }
+        public Color Color { get; set; }
     }
 }

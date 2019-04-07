@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CzechCheckers
 {
-    class Pawn : FigureBase
+    class Pawn : PieceBase
     {
-        public Pawn(FigureColor color) : base(color)
+        public Pawn(Color color) : base(color)
         {
         }
 
@@ -24,7 +24,7 @@ namespace CzechCheckers
 
         private bool IsDiagonalStep(Move move, int distance)
         {
-            int direction = Color == FigureColor.WHITE ? distance : -distance;
+            int direction = Color == Color.White ? distance : -distance;
             return move.To.Row == move.From.Row + direction 
                 && Math.Abs(move.To.Column - move.From.Column) == distance;
         }
@@ -48,7 +48,7 @@ namespace CzechCheckers
 
         private IEnumerable<Field> DiagonalStepsForward(Field from, int distance)
         {
-            int verticalDirection = Color == FigureColor.WHITE ? 1 : -1;
+            int verticalDirection = Color == Color.White ? 1 : -1;
             int[] horizontalDirections = new int[]
             {
                 -1, // left

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace CzechCheckers
 {
-    abstract class FigureBase : IFigure
+    abstract class PieceBase : IPiece
     {
-        public FigureColor Color { get; }
+        public Color Color { get; }
 
-        public FigureBase(FigureColor color)
+        public PieceBase(Color color)
         {
             Color = color;
         }
