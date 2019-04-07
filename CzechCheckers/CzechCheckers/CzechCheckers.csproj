@@ -65,8 +65,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queen.cs" />
     <Compile Include="StandardBoards.cs" />
-    <Compile Include="Tests\MovesGeneration.cs" />
-    <Compile Include="Tests\MovesValidation.cs" />
+    <Compile Include="Tests\Generation.cs" />
+    <Compile Include="Tests\Validation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

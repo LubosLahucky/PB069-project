@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace CzechCheckers.Tests
 {
     [TestClass]
-    public class MovesValidation
+    public class Validation
     {
         private Board board;
 
