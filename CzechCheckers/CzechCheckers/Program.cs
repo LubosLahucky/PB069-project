@@ -10,8 +10,8 @@ namespace CzechCheckers
     {
         static void Main(string[] args)
         {
-            Player white = new Player { Name = "Human", Color = Color.White };
-            Player black = new Player { Name = "Human2", Color = Color.Black };
+            var white = new Player { Name = "Human", Color = Color.White };
+            var black = new ComputerPlayer { Name = "Computer", Color = Color.Black };
 
             new Game(white, black, StandardBoards.Get2v2Board()).Start();
         }

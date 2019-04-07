@@ -12,14 +12,14 @@ namespace CzechCheckers
         private readonly Player blackPlayer;
         private readonly Board board;
 
-        private Player onTurn;
+        private Player playerOnTurn;
 
         public Game(Player whitePlayer, Player blackPlayer, Board board)
         {
             this.whitePlayer = whitePlayer;
             this.blackPlayer = blackPlayer;
             this.board = board;
-            onTurn = whitePlayer;
+            playerOnTurn = whitePlayer;
         }
 
         public void Start()
@@ -34,16 +34,48 @@ namespace CzechCheckers
                 {
                     break;
                 }
+
                 Move();
             }
         }
 
         private void Move()
         {
+            Move move;
+            if (playerOnTurn is ComputerPlayer computer)
+            {
+                move = computer.GenerateMove(board);
+            }
+            else
+            {
+                move = LoadMove();
+            }
+
+            board.Move(move, playerOnTurn.Color);
+
+            if (board.IsTurnOver())
+            {
+                playerOnTurn = playerOnTurn == whitePlayer ? blackPlayer : whitePlayer;
+            }
+        }
+
+        private bool CheckWin()
+        {
+            if (!board.HasPlayerAnyMoves(playerOnTurn.Color))
+            {
+                Console.WriteLine($"Hráč {playerOnTurn.Name} prohrál.");
+                return true;
+            }
+            return false;
+        }
+
+        private Move LoadMove()
+        {
+            Move move;
             bool validMove = false;
             do
             {
-                Console.WriteLine($"Hráč {onTurn.Name} ({onTurn.Color}) je na tahu.");
+                Console.WriteLine($"Hráč {playerOnTurn.Name} ({playerOnTurn.Color}) je na tahu.");
                 Console.Write("fromCol = ");
                 char.TryParse(Console.ReadLine(), out char fromCol);
                 Console.Write("fromRow = ");
@@ -53,7 +85,7 @@ namespace CzechCheckers
                 Console.Write("toRow = ");
                 int.TryParse(Console.ReadLine(), out int toRow);
 
-                Move move = new Move
+                move = new Move
                 {
                     From = new Field
                     {
@@ -67,7 +99,7 @@ namespace CzechCheckers
                     }
                 };
 
-                validMove = board.Move(move, onTurn.Color);
+                validMove = board.IsMoveValid(move, playerOnTurn.Color);
                 if (!validMove)
                 {
                     Console.WriteLine("Neplatný tah!");
@@ -75,20 +107,7 @@ namespace CzechCheckers
             }
             while (!validMove);
 
-            if (board.IsTurnOver())
-            {
-                onTurn = onTurn == whitePlayer ? blackPlayer : whitePlayer;
-            }
-        }
-
-        private bool CheckWin()
-        {
-            if (!board.HasPlayerAnyMoves(onTurn.Color))
-            {
-                Console.WriteLine($"Hráč {onTurn.Name} prehral.");
-                return true;
-            }
-            return false;
+            return move;
         }
     }
 }

@@ -160,20 +160,28 @@ namespace CzechCheckers
 
         public bool HasPieceAnyMoves(Field from)
         {
+            return PieceMoves(from).Any();
+        }
+
+        public IEnumerable<Field> PieceMoves(Field from)
+        {
             if (!CheckFieldBounds(from))
             {
-                return false;
+                yield break;
             }
 
             var piece = this[from];
             if (piece == null)
             {
-                return false;
+                yield break;
             }
 
-            return piece.PossibleMoves(from)
+            var possibleMovesAndJumps = piece.PossibleMoves(from)
                 .Concat(piece.PossibleJumps(from))
-                .Any(to => IsMoveValid(new Move(from, to), piece.Color));
+                .Where(to => IsMoveValid(new Move(from, to), piece.Color));
+
+            foreach (Field field in possibleMovesAndJumps)
+                yield return field;
         }
 
         private int CountObstaclesBetween(Field from, Field to)
@@ -233,6 +241,11 @@ namespace CzechCheckers
         public IEnumerable<Field> PlayerFields(Color color)
         {
             return Helpers.AllFields().Where(field => this[field]?.Color == color);
+        }
+
+        public IEnumerable<Field> MovableFields(Color color)
+        {
+            return PlayerFields(color).Where(from => HasPieceAnyMoves(from));
         }
 
         public override string ToString()
