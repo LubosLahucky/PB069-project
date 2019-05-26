@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace CzechCheckers
 {
-    class ComputerPlayer : Player
+    public class ComputerPlayer : Player
     {
+        // TODO: better strategy
         public Move GenerateMove(Board board)
         {
             var from = board.MovableFields(Color).First();
-            var to = board.PieceMoves(from).First();
+            var to = board.PieceMoves(from, Color).First();
             return new Move(from, to);
         }
     }

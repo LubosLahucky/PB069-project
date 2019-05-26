@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CzechCheckers
+﻿namespace CzechCheckers
 {
-    sealed class StandardBoards
+    public sealed class StandardBoards
     {
         private StandardBoards() { }
 

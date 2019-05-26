@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CzechCheckers
 {
-    class Queen : PieceBase
+    public class Queen : PieceBase
     {
         public Queen(Color color) : base(color)
         {

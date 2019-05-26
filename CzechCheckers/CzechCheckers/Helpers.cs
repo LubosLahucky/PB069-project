@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CzechCheckers
 {
-    class Helpers
+    public sealed class Helpers
     {
+        private Helpers() { }
+
         public static IEnumerable<Field> DiagonalPath(Field from, Field to)
         {
             if (!IsSameDiagonal(from, to))

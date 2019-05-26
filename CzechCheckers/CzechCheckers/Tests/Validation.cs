@@ -1,9 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CzechCheckers.Tests
 {
@@ -413,6 +409,49 @@ namespace CzechCheckers.Tests
                 && Helpers.AllFields()
                     .Except(correct)
                     .All(to => !board.IsMoveValid(new Move(from, to), colorOnTurn));
+        }
+
+        [TestMethod]
+        public void GetMaxJumpLengthNoMoves()
+        {
+            var queenField = new Field { Row = 0, Column = 0 };
+            board[queenField] = new Queen(Color.White);
+            board[new Field { Row = 1, Column = 1 }] = new Pawn(Color.White);
+            var maxQueenJumpLength = board.GetMaxJumpLength(queenField);
+            Assert.IsTrue(maxQueenJumpLength == 0);
+        }
+
+        [TestMethod]
+        public void GetMaxJumpLengthSingleJump()
+        {
+            var queenField = new Field { Row = 0, Column = 0 };
+            board[queenField] = new Queen(Color.White);
+            board[new Field { Row = 1, Column = 1 }] = new Pawn(Color.Black);
+            var maxQueenJumpLength = board.GetMaxJumpLength(queenField);
+            Assert.IsTrue(maxQueenJumpLength == 1);
+        }
+
+        [TestMethod]
+        public void GetMaxJumpLengthDoubleJump()
+        {
+            var queenField = new Field { Row = 0, Column = 0 };
+            board[queenField] = new Queen(Color.White);
+            board[new Field { Row = 1, Column = 1 }] = new Pawn(Color.Black);
+            board[new Field { Row = 2, Column = 4 }] = new Pawn(Color.Black);
+            var maxQueenJumpLength = board.GetMaxJumpLength(queenField);
+            Assert.IsTrue(maxQueenJumpLength == 2);
+        }
+
+        [TestMethod]
+        public void GetMaxJumpLengthTrippleJump()
+        {
+            var queenField = new Field { Row = 0, Column = 0 };
+            board[queenField] = new Queen(Color.White);
+            board[new Field { Row = 1, Column = 1 }] = new Pawn(Color.Black);
+            board[new Field { Row = 2, Column = 4 }] = new Pawn(Color.Black);
+            board[new Field { Row = 2, Column = 6 }] = new Pawn(Color.Black);
+            var maxQueenJumpLength = board.GetMaxJumpLength(queenField);
+            Assert.IsTrue(maxQueenJumpLength == 3);
         }
     }
 }

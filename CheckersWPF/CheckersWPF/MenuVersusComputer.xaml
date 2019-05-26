@@ -1,0 +1,82 @@
+﻿<Window x:Class="CheckersWPF.MenuVersusComputer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CheckersWPF"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Game Settings versus Computer" Height="200" Width="300" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Grid.Row="0"
+                  Grid.Column="0"
+                  Name="variantBox"
+                  FontSize="16"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  BorderThickness="0">
+            <StackPanel>
+                <TextBlock>Starting position:</TextBlock>
+                <RadioButton Name="TwoRowVersion">Two rows</RadioButton>
+                <RadioButton Name="ThreeRowVersion" IsChecked="True">Three rows</RadioButton>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Grid.Row="0"
+                  Grid.Column="1"
+                  FontSize="16"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  BorderThickness="0">
+            <StackPanel>
+                <TextBlock>Your color:</TextBlock>
+                <RadioButton Name="WhiteColor" IsChecked="True">White</RadioButton>
+                <RadioButton Name="BlackColor">Black</RadioButton>
+            </StackPanel>
+        </GroupBox>
+        <StackPanel Grid.Row="1"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock>Your name:</TextBlock>
+            <TextBox Name="HumanName" Width="120" Text="Human"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1"
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock>Computer's name:</TextBlock>
+            <TextBox Name="ComputerName" Width="120" Text="Computer"/>
+        </StackPanel>
+        <Button Grid.Row="2"
+                Grid.Column="0"
+                Name="backButton"
+                Click="BackButton_Click">Back</Button>
+        <Button Grid.Row="2"
+                Grid.Column="1"
+                Name="playButton"
+                Click="PlayButton_Click">Play</Button>
+    </Grid>
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+</Window>

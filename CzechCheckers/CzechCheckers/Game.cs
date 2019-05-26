@@ -1,113 +1,90 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace CzechCheckers
 {
-    class Game
+    public class Game
     {
-        private readonly Player whitePlayer;
-        private readonly Player blackPlayer;
-        private readonly Board board;
+        public Player WhitePlayer { get; set; }
+        public Player BlackPlayer { get; set; }
+        public Player PlayerOnMove { get; set; }
 
-        private Player playerOnTurn;
+        [JsonIgnore]
+        public Player PlayerNotOnMove => PlayerOnMove.Equals(WhitePlayer) ? BlackPlayer : WhitePlayer;
+    
+        public Board Board { get; set; }
+
+        public Game() { }
 
         public Game(Player whitePlayer, Player blackPlayer, Board board)
         {
-            this.whitePlayer = whitePlayer;
-            this.blackPlayer = blackPlayer;
-            this.board = board;
-            playerOnTurn = whitePlayer;
+            WhitePlayer = whitePlayer;
+            BlackPlayer = blackPlayer;
+            PlayerOnMove = whitePlayer;
+            Board = board;
+        }
+
+        public bool TryMove(Field from, Field to)
+        {
+            bool success = Board.Move(new Move(from, to), PlayerOnMove.Color);
+            if (success && Board.IsTurnOver())
+            {
+                NextTurn();
+            }
+            return success;
+        }
+
+        public void NextTurn()
+        {
+            PlayerOnMove = PlayerNotOnMove;
+
+            if (IsGameOver())
+            {
+                EndGame(PlayerNotOnMove);
+                return;
+            }
+
+            ComputerTurn();
+        }
+
+        private bool IsGameOver()
+        {
+            return !Board.HasPlayerAnyMoves(PlayerOnMove.Color);
+        }
+
+        public void ComputerTurn()
+        {
+            if (!(PlayerOnMove is ComputerPlayer computerPlayer))
+                return;
+
+            do
+            {
+                var move = computerPlayer.GenerateMove(Board);
+                Board.Move(move, PlayerOnMove.Color);
+            }
+            while (!Board.IsTurnOver());
+
+            NextTurn();
         }
 
         public void Start()
         {
-            while (true)
-            {
-                Console.Clear();
-                Console.WriteLine(board);
-                Console.WriteLine();
-
-                if (CheckWin())
-                {
-                    break;
-                }
-
-                Move();
-            }
+            ComputerTurn();
         }
 
-        private void Move()
+        public void EndGame(Player winner)
         {
-            Move move;
-            if (playerOnTurn is ComputerPlayer computer)
+            OnGameEnded(new GameEndedEventArgs
             {
-                move = computer.GenerateMove(board);
-            }
-            else
-            {
-                move = LoadMove();
-            }
-
-            board.Move(move, playerOnTurn.Color);
-
-            if (board.IsTurnOver())
-            {
-                playerOnTurn = playerOnTurn == whitePlayer ? blackPlayer : whitePlayer;
-            }
+                Winner = winner
+            });
         }
 
-        private bool CheckWin()
+        protected virtual void OnGameEnded(GameEndedEventArgs e)
         {
-            if (!board.HasPlayerAnyMoves(playerOnTurn.Color))
-            {
-                Console.WriteLine($"Hráč {playerOnTurn.Name} prohrál.");
-                return true;
-            }
-            return false;
+            GameEnded?.Invoke(this, e);
         }
 
-        private Move LoadMove()
-        {
-            Move move;
-            bool validMove = false;
-            do
-            {
-                Console.WriteLine($"Hráč {playerOnTurn.Name} ({playerOnTurn.Color}) je na tahu.");
-                Console.Write("fromCol = ");
-                char.TryParse(Console.ReadLine(), out char fromCol);
-                Console.Write("fromRow = ");
-                int.TryParse(Console.ReadLine(), out int fromRow);
-                Console.Write("toCol = ");
-                char.TryParse(Console.ReadLine(), out char toCol);
-                Console.Write("toRow = ");
-                int.TryParse(Console.ReadLine(), out int toRow);
-
-                move = new Move
-                {
-                    From = new Field
-                    {
-                        Column = char.ToUpper(fromCol) - 'A',
-                        Row = fromRow - 1,
-                    },
-                    To = new Field
-                    {
-                        Column = char.ToUpper(toCol) - 'A',
-                        Row = toRow - 1
-                    }
-                };
-
-                validMove = board.IsMoveValid(move, playerOnTurn.Color);
-                if (!validMove)
-                {
-                    Console.WriteLine("Neplatný tah!");
-                }
-            }
-            while (!validMove);
-
-            return move;
-        }
+        public event EventHandler<GameEndedEventArgs> GameEnded;
     }
 }

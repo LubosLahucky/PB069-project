@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CzechCheckers
 {
-    class Board
+    public class Board
     {
         public const int MinRow = 0;
         public const int MaxRow = 7;
         public const int MinCol = 0;
         public const int MaxCol = 7;
 
-        private IPiece MultiJumping { get; set; }
-        
-        private readonly IPiece[,] fields;
-        
+        public IPiece MultiJumping { get; set; }
+
+        public IPiece[,] fields;
+
+        public Board() { }
+
         public Board(IPiece[,] fields)
         {
             this.fields = fields;
@@ -27,7 +27,7 @@ namespace CzechCheckers
             get => fields[field.Row, field.Column];
             set => fields[field.Row, field.Column] = value;
         }
-        
+
         public bool Move(Move move, Color colorOnTurn)
         {
             if (!IsMoveValid(move, colorOnTurn))
@@ -62,7 +62,7 @@ namespace CzechCheckers
             }
 
             IPiece piece = this[move.From];
-            if (piece == null 
+            if (piece == null
                 || this[move.To] != null
                 || piece.Color != colorOnTurn
                 || (!IsTurnOver() && !IsPieceMultiJumping(piece)))
@@ -81,7 +81,7 @@ namespace CzechCheckers
 
             return CheckMove(move);
         }
-        
+
         public bool IsTurnOver()
         {
             return MultiJumping == null;
@@ -94,10 +94,10 @@ namespace CzechCheckers
                 return true;
             }
             foreach (Field from in PlayerFields(color))
-            { 
+            {
                 IPiece piece = this[from];
                 if (PieceMustJump(from))
-                { 
+                {
                     return true;
                 }
             }
@@ -124,7 +124,7 @@ namespace CzechCheckers
         private bool CheckMove(Move move)
         {
             var piece = this[move.From];
-            return IsTurnOver() 
+            return IsTurnOver()
                 && piece.CanMove(move)
                 && CountObstaclesBetween(move.From, move.To) == 0;
         }
@@ -155,15 +155,15 @@ namespace CzechCheckers
 
         public bool HasPlayerAnyMoves(Color color)
         {
-            return PlayerFields(color).Any(from => HasPieceAnyMoves(from));
+            return PlayerFields(color).Any(from => HasPieceAnyMoves(from, color));
         }
 
-        public bool HasPieceAnyMoves(Field from)
+        public bool HasPieceAnyMoves(Field from, Color colorOnTurn)
         {
-            return PieceMoves(from).Any();
+            return PieceMoves(from, colorOnTurn).Any();
         }
 
-        public IEnumerable<Field> PieceMoves(Field from)
+        public IEnumerable<Field> PieceMoves(Field from, Color colorOnTurn)
         {
             if (!CheckFieldBounds(from))
             {
@@ -178,7 +178,7 @@ namespace CzechCheckers
 
             var possibleMovesAndJumps = piece.PossibleMoves(from)
                 .Concat(piece.PossibleJumps(from))
-                .Where(to => IsMoveValid(new Move(from, to), piece.Color));
+                .Where(to => IsMoveValid(new Move(from, to), colorOnTurn));
 
             foreach (Field field in possibleMovesAndJumps)
                 yield return field;
@@ -186,7 +186,7 @@ namespace CzechCheckers
 
         private int CountObstaclesBetween(Field from, Field to)
         {
-            return NonEmptyFieldsBetween(from, to).Count(); 
+            return NonEmptyFieldsBetween(from, to).Count();
         }
 
         private Field FindFirstObstacleBetween(Field from, Field to)
@@ -199,7 +199,7 @@ namespace CzechCheckers
         {
             return Helpers.DiagonalPath(from, to).Where(field => this[field] != null);
         }
-        
+
         private bool RemoveFirstObstacleBetween(Field from, Field to)
         {
             Field firstObstacle = FindFirstObstacleBetween(from, to);
@@ -228,6 +228,39 @@ namespace CzechCheckers
                 && field.Column >= MinCol && field.Column <= MaxCol;
         }
 
+        public uint GetMaxJumpLength(Field field)
+        {
+            var piece = this[field];
+            if (piece == null)
+                return 0;
+
+            uint maxLength = 0;
+            var possibleFields = PieceMoves(field, piece.Color);
+
+            foreach (var possibleField in possibleFields)
+            {
+                Board boardCopy = Copy();
+                boardCopy.Move(new Move(field, possibleField), piece.Color);
+                if (boardCopy.IsTurnOver())
+                {
+                    maxLength = Math.Max(maxLength, 1);
+                }
+                else
+                { 
+                    maxLength = Math.Max(maxLength, 1 + boardCopy.GetMaxJumpLength(possibleField));
+                }
+            }
+
+            return maxLength;
+        }
+
+        private Board Copy()
+        {
+            IPiece[,] fieldsCopy = new IPiece[fields.GetUpperBound(0) + 1, fields.GetUpperBound(1) + 1];
+            Array.Copy(fields, fieldsCopy, fields.Length);
+            return new Board(fieldsCopy);
+        }
+
         public IEnumerable<Field> NonEmptyFields()
         {
             return Helpers.AllFields().Except(EmptyFields());
@@ -245,7 +278,7 @@ namespace CzechCheckers
 
         public IEnumerable<Field> MovableFields(Color color)
         {
-            return PlayerFields(color).Where(from => HasPieceAnyMoves(from));
+            return PlayerFields(color).Where(from => HasPieceAnyMoves(from, color));
         }
 
         public override string ToString()

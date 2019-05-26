@@ -2,7 +2,7 @@
 
 namespace CzechCheckers
 {
-    interface IPiece
+    public interface IPiece
     {
         /// <summary>
         /// Defines the way how the piece moves

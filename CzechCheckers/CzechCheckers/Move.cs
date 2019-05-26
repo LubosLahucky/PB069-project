@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CzechCheckers
+﻿namespace CzechCheckers
 {
-    struct Move
+    public struct Move
     {
         public Field From { get; set; }
         public Field To { get; set; }

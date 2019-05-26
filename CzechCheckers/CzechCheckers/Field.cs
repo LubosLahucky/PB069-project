@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CzechCheckers
+﻿namespace CzechCheckers
 {
-    struct Field
+    public struct Field
     {
         public static readonly Field Invalid = new Field { Column = -1, Row = -1 };
 
@@ -14,6 +8,8 @@ namespace CzechCheckers
         public int Row { get; set; }
 
         public bool IsValid() => !Equals(Invalid);
+
+        public bool IsBlack() => ((Row + Column) & 1) != 1;
 
         public override string ToString() => $"[{(char)('A' + Column)}:{Row + 1}]";
     }
