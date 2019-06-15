@@ -394,7 +394,7 @@ namespace CzechCheckers.Tests
             board[new Field { Row = 3, Column = 3 }] = new Pawn(Color.Black);
             board[new Field { Row = 5, Column = 3 }] = new Pawn(Color.Black);
             var firstJumpEnd = new Field { Row = 4, Column = 4 };
-            board.Move(new Move(whitePawnStart, firstJumpEnd), Color.White);
+            board.Move(new Move(whitePawnStart, firstJumpEnd));
             var correct = new Field[]
             {
                 new Field { Row = 6, Column = 2 }

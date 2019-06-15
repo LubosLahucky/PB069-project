@@ -26,7 +26,7 @@ namespace CzechCheckers
 
         public bool TryMove(Field from, Field to)
         {
-            bool success = Board.Move(new Move(from, to), PlayerOnMove.Color);
+            bool success = Board.TryMove(new Move(from, to), PlayerOnMove.Color);
             if (success && Board.IsTurnOver())
             {
                 NextTurn();
@@ -60,7 +60,7 @@ namespace CzechCheckers
             do
             {
                 var move = computerPlayer.GenerateMove(Board);
-                Board.Move(move, PlayerOnMove.Color);
+                Board.TryMove(move, PlayerOnMove.Color);
             }
             while (!Board.IsTurnOver());
 
