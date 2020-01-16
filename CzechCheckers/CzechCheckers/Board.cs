@@ -28,7 +28,7 @@ namespace CzechCheckers
             set => fields[field.Row, field.Column] = value;
         }
 
-        public void Move(Move move)
+        public Board Move(Move move)
         {
             bool jump = RemoveFirstObstacleBetween(move.From, move.To);
 
@@ -45,6 +45,8 @@ namespace CzechCheckers
                 this[move.To] = piece;
                 MultiJumping = (jump && CanPieceJump(move.To)) ? piece : null;
             }
+
+            return this;
         }
 
         public bool TryMove(Move move, Color colorOnTurn)
@@ -126,6 +128,8 @@ namespace CzechCheckers
             {
                 return true;
             }
+
+            /*
             foreach (Field from in PlayerFields(color).Where(field => this[field] is Queen))
             {
                 IPiece piece = this[from];
@@ -134,7 +138,11 @@ namespace CzechCheckers
                     return true;
                 }
             }
+            
             return false;
+            */
+
+            return PlayerFields(color).Where(field => this[field] is Queen).Any(from => CanPieceJump(from));
         }
 
         private bool CheckMove(Move move)
@@ -192,6 +200,17 @@ namespace CzechCheckers
         public bool HasPlayerAnyMoves(Color color)
         {
             return PlayerFields(color).Any(from => HasPieceAnyMoves(from, color));
+        }
+
+        public IEnumerable<Move> PlayerMoves(Color color)
+        {
+            foreach (var from in PlayerFields(color))
+            {
+                foreach (var to in PieceMoves(from, color))
+                {
+                    yield return new Move(from, to);
+                }
+            }
         }
 
         public bool HasPieceAnyMoves(Field from, Color colorOnTurn)
@@ -290,7 +309,7 @@ namespace CzechCheckers
             return maxLength;
         }
 
-        private Board Copy()
+        public Board Copy()
         {
             IPiece[,] fieldsCopy = new IPiece[fields.GetUpperBound(0) + 1, fields.GetUpperBound(1) + 1];
             Array.Copy(fields, fieldsCopy, fields.Length);
@@ -315,24 +334,6 @@ namespace CzechCheckers
         public IEnumerable<Field> MovableFields(Color color)
         {
             return PlayerFields(color).Where(from => HasPieceAnyMoves(from, color));
-        }
-
-        public int PlayerScore(Color color)
-        {
-            int score = 0;
-            foreach (var field in PlayerFields(color))
-            {
-                var piece = this[field];
-                if (piece is Queen)
-                {
-                    score += 3;
-                }
-                else
-                {
-                    score += 1; 
-                }
-            }
-            return score;
         }
 
         public override string ToString()

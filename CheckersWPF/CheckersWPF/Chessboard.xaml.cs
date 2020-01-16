@@ -175,6 +175,7 @@ namespace CheckersWPF
                 if (!game.Board.IsTurnOver())
                 {
                     lastField = chessboardField;
+                    HighlightSelectedPiece(chessboardField);
                     HighlightFields(game.Board.PieceMoves(chessboardField, game.PlayerOnMove.Color));
                 }
                 return;
@@ -188,6 +189,7 @@ namespace CheckersWPF
             }
 
             UpdateUI();
+            HighlightSelectedPiece(chessboardField);
             HighlightFields(pieceMoves);
 
             lastField = chessboardField;
@@ -223,7 +225,17 @@ namespace CheckersWPF
                 Column = index % (Board.MaxRow + 1)
             };
         }
-        
+
+        private void HighlightSelectedPiece(Field boardField)
+        {
+            var image = chessboardGrid
+                .Children
+                .OfType<Image>()
+                .First(x => GetBoardFieldFromImageField(GetFieldByIndex(chessboardGrid.Children.IndexOf(x))).Equals(boardField));
+
+            image.Source = new BitmapImage(new Uri($@"./res/highlight-{game.Board[boardField]}.png", UriKind.Relative));
+        }
+
         private void HighlightField(Field boardField)
         {
             var image = chessboardGrid
